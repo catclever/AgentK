@@ -1,0 +1,42 @@
+{
+  "name": "agnet_f",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev -w @agent-k/shoggoth",
+    "dev:demo": "npm run dev -w demo-app",
+    "dev:eye": "npm run dev -w @agent-k/eyes",
+    "dev:tentacles": "npm run dev -w @agent-k/tentacles",
+    "dev:gladius": "npm run dev -w @agent-k/gladius",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "core",
+    "shoggoth",
+    "atoms",
+    "libs/*",
+    "apps/*"
+  ],
+  "type": "commonjs",
+  "dependencies": {
+    "@agent-k/core": "^0.0.1",
+    "@webcontainer/api": "^1.6.1",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0"
+  },
+  "devDependencies": {
+    "@use-gesture/react": "^10.3.1",
+    "autoprefixer": "^10.4.22",
+    "baseline-browser-mapping": "^2.10.10",
+    "clsx": "^2.1.1",
+    "concurrently": "^9.2.1",
+    "lucide-react": "^0.555.0",
+    "postcss": "^8.5.6",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^4.1.17"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "page-home",
+  "name": "Home Page",
+  "components": [
+    {
+      "id": "card-1",
+      "type": "UserCard",
+      "canvas": {
+        "x": 100,
+        "y": 100,
+        "width": 300,
+        "height": 400
+      },
+      "data": {
+        "collection": "users",
+        "id": "u1"
+      }
+    },
+    {
+      "id": "card-2",
+      "type": "UserCard",
+      "canvas": {
+        "x": 450,
+        "y": 100,
+        "width": 300,
+        "height": 400
+      },
+      "data": {
+        "collection": "users",
+        "id": "u2"
+      }
+    }
+  ]
+}

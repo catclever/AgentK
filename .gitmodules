@@ -1,0 +1,9 @@
+[submodule "core"]
+	path = core
+	url = https://github.com/catclever/angetK-core.git
+[submodule "libs"]
+	path = libs
+	url = https://github.com/catclever/libs.git
+[submodule "atoms"]
+	path = atoms
+	url = https://github.com/catclever/agentK-atoms.git
