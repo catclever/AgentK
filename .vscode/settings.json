@@ -1,0 +1,31 @@
+{
+    "peacock.color": "#7e22ce",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#9743e0",
+        "activityBar.background": "#9743e0",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#df953f",
+        "activityBarBadge.foreground": "#15202b",
+        "commandCenter.border": "#e7e7e799",
+        "sash.hoverBorder": "#9743e0",
+        "statusBar.background": "#7e22ce",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#9743e0",
+        "statusBarItem.remoteBackground": "#7e22ce",
+        "statusBarItem.remoteForeground": "#e7e7e7",
+        "titleBar.activeBackground": "#7e22ce",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#7e22ce99",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "background.windowBackgrounds": [
+        "/Users/kael/Pictures/wallpaper/**"
+    ],
+    "background.backgroundChangeTime": [
+        7200,
+        0,
+        0,
+        0
+    ]
+}
