@@ -9,16 +9,30 @@ const APP_PORTS: Record<string, string> = {
 
 export function useBackendConnection(projectName: string, terminal: any) {
   const [serverUrl, setServerUrl] = useState<string>('');
+  const [isExternal, setIsExternal] = useState<boolean>(false);
+  const [externalPort, setExternalPort] = useState<string | null>(null);
   
   useEffect(() => {
     // 1. Establish the connection URL to the local dev server
-    const port = APP_PORTS[projectName] || '5174';
-    const url = `http://localhost:${port}`;
-    setServerUrl(url);
-
-    if (terminal) {
-      terminal.write(`\\r\\n[Agent K Bridge] Connected to local environment: ${url}\\r\\n`);
-      terminal.write(`[Agent K Bridge] Assuming \`npm run dev:demo\` is running...\\r\\n`);
+    // Check if the user explicitly provided a target port in the Shoggoth URL (e.g. ?port=8080)
+    const urlParams = new URLSearchParams(window.location.search);
+    const customPort = urlParams.get('port');
+    
+    if (customPort) {
+      setIsExternal(true);
+      setExternalPort(customPort);
+      setServerUrl(`http://localhost:${customPort}`);
+      if (terminal) {
+        terminal.write(`\\r\\n[Agent K Bridge] Connected to EXTERNAL environment on port: ${customPort}\\r\\n`);
+      }
+    } else {
+      setIsExternal(false);
+      setExternalPort(null);
+      const port = APP_PORTS[projectName] || '5174';
+      setServerUrl(`http://localhost:${port}`);
+      if (terminal) {
+        terminal.write(`\\r\\n[Agent K Bridge] Connected to internal workspace app: ${projectName}\\r\\n`);
+      }
     }
 
     // 2. Here we could hook up a WebSocket to receive terminal logs from 
@@ -26,5 +40,5 @@ export function useBackendConnection(projectName: string, terminal: any) {
 
   }, [projectName, terminal]);
 
-  return { serverUrl };
+  return { serverUrl, isExternal, externalPort };
 }

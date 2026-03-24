@@ -18,7 +18,7 @@ function App() {
   const [projectName, setProjectName] = useState('demo-app');
 
   const [term, setTerm] = useState<any>(null);
-  const { serverUrl } = useBackendConnection(projectName, term);
+  const { serverUrl, isExternal, externalPort } = useBackendConnection(projectName, term);
   
   // Load Project
   useEffect(() => {
@@ -110,14 +110,20 @@ function App() {
         <div className="h-12 bg-gray-800 border-b border-gray-700 flex items-center px-4 justify-between z-10 relative">
           <div className="flex items-center gap-4">
             <span className="font-bold text-blue-400">Agent K Studio</span>
-            <select 
-              className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-            >
-              <option value="demo-app">apps/demo-app</option>
-              <option value="todo-app">apps/todo-app (Mock)</option>
-            </select>
+            {isExternal ? (
+              <select className="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-500 cursor-not-allowed" disabled>
+                <option>External Instance (Port: {externalPort})</option>
+              </select>
+            ) : (
+              <select 
+                className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+              >
+                <option value="demo-app">apps/demo-app</option>
+                <option value="todo-app">apps/todo-app (Mock)</option>
+              </select>
+            )}
           </div>
           <div className="text-xs text-gray-500 flex gap-4">
              <span>Components: {components.length}</span>
