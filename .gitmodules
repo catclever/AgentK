@@ -7,3 +7,6 @@
 [submodule "atoms"]
 	path = atoms
 	url = https://github.com/catclever/agentK-atoms.git
+[submodule "shoggoth"]
+	path = shoggoth
+	url = https://github.com/catclever/agentK-shoggoth.git
