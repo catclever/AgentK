@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@agent-k/tentacles": ["libs/tentacles/src/index.ts"],
+      "@agent-k/gladius": ["libs/gladius/src/index.ts"],
+      "@agent-k/eyes": ["libs/eyes/src/index.ts"],
+      "@agent-k/azathoth": ["libs/azathoth/src/index.ts"],
+      "@agent-k/atoms": ["atoms/src/index.ts"],
+      "@agent-k/core": ["core/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build", "**/node_modules/**"]
+}

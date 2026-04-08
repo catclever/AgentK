@@ -9,7 +9,8 @@
         "x": 100,
         "y": 100,
         "width": 300,
-        "height": 400
+        "height": 400,
+        "rotation": 0
       },
       "data": {
         "collection": "users",
@@ -20,10 +21,11 @@
       "id": "card-2",
       "type": "UserCard",
       "canvas": {
-        "x": 450,
-        "y": 100,
+        "x": 537,
+        "y": 97,
         "width": 300,
-        "height": 400
+        "height": 400,
+        "rotation": 0
       },
       "data": {
         "collection": "users",
