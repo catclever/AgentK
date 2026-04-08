@@ -6,8 +6,8 @@
       "id": "card-1",
       "type": "UserCard",
       "canvas": {
-        "x": 100,
-        "y": 100,
+        "x": 36,
+        "y": 149,
         "width": 300,
         "height": 400,
         "rotation": 0
@@ -21,11 +21,11 @@
       "id": "card-2",
       "type": "UserCard",
       "canvas": {
-        "x": 473,
-        "y": 138,
+        "x": 454,
+        "y": 190,
         "width": 300,
         "height": 400,
-        "rotation": 0
+        "rotation": -32.13777769071524
       },
       "data": {
         "collection": "users",
