@@ -12,9 +12,12 @@ export const UserCard = ({ data, actions, style }: any) => {
         {data.name?.charAt(0) || '?'}
       </div>
       <div className="text-center">
-        <h3 className="font-bold text-lg text-gray-800">{data.name}</h3>
-        <p className="text-sm text-gray-500">{data.role}</p>
-        <p className="text-xs text-gray-400 mt-1">{data.email}</p>
+        <h3 className="font-bold text-lg text-gray-800">{data.name || 'No Name'}</h3>
+        <p className="text-sm text-gray-500">{data.role || 'No Role'}</p>
+        <p className="text-xs text-gray-400 mt-1">{data.email || 'No Email'}</p>
+        <div className="text-xs text-left bg-gray-100 mt-2 p-2 rounded overflow-auto max-h-24">
+          <pre>{JSON.stringify(data, null, 2)}</pre>
+        </div>
       </div>
       <button 
         className="mt-auto px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"

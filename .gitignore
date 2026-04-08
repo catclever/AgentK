@@ -1,8 +1,13 @@
+# dependency
 node_modules/
 dist/
-.DS_Store
 
+# design & ai
+.agent/
 docs/
+
+# macOS
+.DS_Store
 
 # apps
 talk-with-repo/

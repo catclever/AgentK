@@ -4,6 +4,7 @@ import { Renderer } from '@agent-k/core';
 import { UserCard } from './components/UserCard';
 import { initMockData } from './mockData';
 import homePageSpec from './pages/home.json';
+import './index.css';
 
 // Initialize App
 async function bootstrap() {
@@ -13,7 +14,7 @@ async function bootstrap() {
   
   const App = () => {
     // In a real app, page spec might verify dynamic, but here it's static
-    const [page] = useState(homePageSpec);
+    const [page] = useState<any>(homePageSpec);
 
     // Context for navigation/global state
     const context = {

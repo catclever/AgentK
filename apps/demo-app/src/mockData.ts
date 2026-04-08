@@ -1,19 +1,5 @@
-import { store } from '@agent-k/core';
+import { store, defineSchema } from '@agent-k/core';
 import { z } from 'zod';
-
-// Define Schema
-export const UserSchema = {
-  version: 0,
-  primaryKey: 'id',
-  type: 'object',
-  properties: {
-    id: { type: 'string', maxLength: 100 },
-    name: { type: 'string' },
-    role: { type: 'string' },
-    email: { type: 'string' }
-  },
-  required: ['id', 'name', 'role']
-} as const;
 
 export const UserZodSchema = z.object({
   id: z.string(),
@@ -23,20 +9,23 @@ export const UserZodSchema = z.object({
 });
 
 export async function initMockData() {
+  // 1. Follow Core Framework Schema Registration
+  const userSchemaDef = defineSchema('users', UserZodSchema, 'id');
+  await store.register(userSchemaDef);
+
+  // 2. Initialize Database
   const db = await store.init();
   
-  // Register Schema
-  if (!db.collections.users) {
-    await db.addCollections({
-      users: {
-        schema: UserSchema
-      }
-    });
-
-    // Populate Data
+  // 3. Seed data strictly if collection is empty, avoiding duplicate conflicts gracefully
+  const existing = await db.users.find().exec();
+  
+  if (existing.length === 0) {
     await db.users.bulkInsert([
       { id: 'u1', name: 'Alice Chen', role: 'Engineer', email: 'alice@agent-k.com' },
       { id: 'u2', name: 'Bob Smith', role: 'Designer', email: 'bob@agent-k.com' }
     ]);
+    console.log('[Agent K] Seeded mock data for: users');
+  } else {
+    console.log(`[Agent K] Collection users already has ${existing.length} records. Seeding skipped.`);
   }
 }
