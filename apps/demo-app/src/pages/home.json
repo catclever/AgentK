@@ -1,13 +1,19 @@
 {
   "id": "page-home",
   "name": "Home Page",
+  "onEvents": {
+    "promote_clicked": {
+      "action": "navigate",
+      "payload": "/promotion-success"
+    }
+  },
   "components": [
     {
       "id": "card-1",
       "type": "UserCard",
       "canvas": {
-        "x": 36,
-        "y": 149,
+        "x": 38,
+        "y": 164,
         "width": 300,
         "height": 400,
         "rotation": 0
@@ -15,21 +21,35 @@
       "data": {
         "collection": "users",
         "id": "u1"
+      },
+      "onEvents": {
+        "global_refresh": {
+          "action": "do_promote",
+          "payload": { "source": "global_btn" },
+          "forward": false
+        }
       }
     },
     {
       "id": "card-2",
       "type": "UserCard",
       "canvas": {
-        "x": 454,
-        "y": 190,
+        "x": 432,
+        "y": 26,
         "width": 300,
         "height": 400,
-        "rotation": -32.13777769071524
+        "rotation": 0
       },
       "data": {
         "collection": "users",
         "id": "u2"
+      },
+      "tendrils": ["card-1"],
+      "onEvents": {
+        "promote_clicked": {
+          "action": "do_promote",
+          "payload": { "source": "card-1's emit" }
+        }
       }
     }
   ]
