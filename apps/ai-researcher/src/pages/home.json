@@ -1,0 +1,23 @@
+{
+  "id": "ai-researcher-app",
+  "name": "AI Literature Researcher",
+  "components": [
+    {
+      "id": "search-panel",
+      "type": "SearchPanel",
+      "canvas": {
+        "className": "flex-none z-[9999]",
+        "width": "100%"
+      }
+    },
+    {
+      "id": "main-canvas",
+      "type": "InfiniteBoard",
+      "canvas": {
+        "className": "flex-1 relative z-0",
+        "width": "100%",
+        "height": "100%"
+      }
+    }
+  ]
+}

@@ -90,18 +90,23 @@ AI 首先定义数据结构（Schema），而非直接写 UI。
   - **Fetch 动作:** 请求后端 **Entity API** (`GET /users?ids=u_01`)，后端**必须返回全量数据**。
   - **存储:** 更新 User 表，标记 `_isFull: true`。
 
-### C. 写入策略 (Write Strategy)
+### C. 数据与事件交互机制 (The Dual Plane Mechanism)
 
-**规则：** 前端优先（乐观更新），CQRS（命令查询分离），统一隧道。
+**规则：** 前端逻辑被严格划分为处理瞬态事件的“控制面”和处理落盘持久化的“数据面”。
 
-- **AI 代码:** 不允许写 fetch/axios。
-  - AI 只能写：`dispatch('update', 'User', 'u_01', { name: 'New Name' })`
-  - 或：`dispatch('link', 'Album', 'a_01', { items: ['p_01'] })` (关系操作)
+**1. 控制面 (The Control Plane - Tendrils Network):**
+- **职责:** 负责所有的即时 UI 联动、动画触发、路由跳转、焦点控制等非持久化操作。
+- **AI 代码:** `actions.emit('promote_clicked', { source: 'button' })`
+- **中间层行为:** 这是一个去中心化的消息总线。事件沿着 JSON 规范中定义的 `tendrils`（触须连线），以脉冲形式瞬间传递给订阅了该事件（`actions.on`）的相邻目标组件，实现极其解耦的局部联动。
+
+**2. 数据面 (The Data Plane - Write Strategy):**
+- **规则:** 严格遵守 CQRS（命令查询分离）与单向数据流。前端优先（乐观更新），统一隧道同步。
+- **AI 代码:** 严禁手写 fetch/axios。当决定要持久化数据时，只能调用：`dispatch('update', 'User', 'u_01', { name: 'New Name' })`
 - **中间层行为:**
-  1.  **Optimistic UI:** 立即修改 RxDB，界面 0 延迟刷新。
-  2.  **Make Command:** 生成消息 `{ action: 'update', target: 'u_01', payload: ... }`。
-  3.  **Transport:** 通过 **Dispatch API** (`POST /api/dispatch`) 发送给后端。
-  4.  **Reconcile:** 如果后端报错，回滚 RxDB 并通知用户。
+  1.  **Optimistic UI:** 立即修改本地数据库 RxDB，界面 0 延迟刷新。
+  2.  **Make Command:** 生成标准命令包 `{ action: 'update', target: 'u_01', payload: ... }`。
+  3.  **Transport:** 通过底层统一隧道 **Dispatch API** (`POST /api/dispatch`) 发送给后端。
+  4.  **Reconcile:** 如果后端校验失败，底层自动回滚 RxDB 并通知用户，无需 AI 编写任何错误处理代码。
 
 ### 4. Transparent Data Layer
 
@@ -149,12 +154,11 @@ This is the constrained environment where AI builds applications.
     - **Principle**: Intrinsic properties (color, shape) are inside the component. Extrinsic properties (Opacity, Z-Index, Position) are declared at **usage time**.
     - **Benefit**: Components remain pure and reusable; context determines their presentation.
 
-5.  **Restricted Logic (Data-Driven Actions)**
-    - **Principle**: The frontend _only_ mutates local data. It never calls backend APIs directly.
-    - **Implementation**: Components receive `actions` (`add`, `update`, `remove`, `refresh`).
-    - **Local Refresh**: `actions.refresh()` triggers a re-fetch of the bound data from the backend, updating the local DB and automatically re-rendering the component. This supports granular, component-level updates.
-    - **Workflow**: To trigger a backend process (e.g., "Send Email"), the frontend inserts a document into a `jobs` collection. The backend watches this collection and reacts.
-    - **Benefit**: Decouples UI from Logic. The UI works offline. The backend can change implementation without breaking the UI.
+5.  **双轨逻辑控制 (Dual-Track Logic)**
+    - **瞬态自由 (Control Plane)**: 组件内部允许构建复杂的交互状态机，并可以自由收发 `actions.emit` 脉冲与其他组件在内存层面“互撩”。
+    - **持久化约束 (Data Plane)**: 一旦涉及到业务实体数据的修改，严禁组件自行调用外部网络 API。必须转交给底层的 `dispatch` 或 `actions.refresh()`。
+    - **统一协调**: `actions.refresh()` 会触发数据层的重拉取，更新本地 DB 并自动反映在视图上。如需触发发邮件等服务端事务，则向 `jobs` 集合写入记录，由后端消费。
+    - **Benefit**: 这种双轨设计既赋予了前端（控制面）搭建花式酷炫交互的“充分自由”，又死守了“业务数据（数据面）严密同步不乱套”的底线。
 
 ---
 
@@ -362,3 +366,32 @@ This is the boilerplate required to run the app in a browser. Ideally, this is *
 3.  **Styles**: `index.css` (Global Tailwind setup).
 
 **Vision**: In the future, the "Eye" (IDE) will manage the "Body" automatically. The user only sees and edits the "Soul".
+
+---
+
+## 11. 核心架构修正与主线任务 (Mainline Adjustments)
+
+随着核心引擎代码的演进，早期规划的蓝图与目前的实际实现之间出现了几处明显的断层。在开启其他支线（如 Tauri 桌面端、新业务模块）之前，我们需要将这些偏差纠正，统合为以下几条主线任务：
+
+### 主线 1：双平面架构统合 (Control Plane vs Data Plane)
+- **当前矛盾**: 最初设计倾向于“极其严苛的数据驱动”，即所有交互必须修改中央数据库 (RxDB) 才能触发 UI 刷新。但现已引入“触须网络 (Tendrils)”，赋予了组件去中心化、点对点的纯事件交互能力，打破了原来的单一数据流。
+- **调整目标**: 明确系统的双平面职责。**控制面**（触须网络）负责所有的瞬态交互、动画联动、UI 状态路由；**数据面**（透明数据层/Store）负责必须持久化的业务数据同步。控制面产生的状态沉淀，最终调用数据面落盘。
+
+### 主线 2：相对中心点与锚定物理引擎 (Relative Center-Anchor Physics)
+- **当前矛盾**: 现阶段代码库 (`Shoggoth` 画布和 `Renderer`) 中使用的是传统的左上角 `(x, y)` 绝对定位。这使得组件在画布中是彼此孤立的，无法实现“相对跟随”或为未来的逻辑连线提供拓扑基础。
+- **调整目标**: 重构 `core` 的排版引擎。彻底废弃全局绝对定位，变更为 `cx, cy` (Center X/Y) 并支持 `anchor` 属性。使得一个组件可以相对于另一个组件的中心点进行定位。当父锚点移动时，依赖它的组件会自动保持相对偏移并跟随移动。
+- **实施图纸**: 详细的 Schema 修改、依赖图解析算法和拖拽逆向计算逻辑已归档至 [具体改造计划文档](./relative-anchor-physics-plan.md)。可随时交接给 AI 进行代码落地。
+
+### 主线 3：后端通信契约的补全 (Backend Contract Implementation)
+- **当前矛盾**: 文档中设计了极简的后端接口（Index API, Entity API, Dispatch 统一隧道），但系统核心目前完全处于单机 Local-First 状态，这层网络隧道并没有通用代码支撑。而在具体的应用（如 `talk-with-repo`）中，则是充斥着传统且强耦合的手写 Fetch 接口。
+- **调整目标**: 在 `core` 的数据层中真正补齐与服务端交互的通道，实现本地 RxDB 与远端通用接口的无缝衔接。
+- **实施图纸**: 我们将以 `talk-with-repo` 项目作为靶场来验证。详细的“状态分界（控制面 vs 数据面）”重构思路已归档至 [具体验证与重构草案文档](./backend-contract-verification-plan.md)。这也是未来落地的重点参考。
+
+---
+
+## 12. Future Branches & TODOs (支线与规划)
+
+### 支线任务：Tauri 桌面端应用支持
+- **目标**: 将 Agent K 整体打包为独立的 Tauri 桌面端应用，脱离纯浏览器环境的限制。
+- **前置条件**: 需要先理顺和稳定现有的数据层与后端逻辑（Core 模块的 Transparent Data Layer 和 Kernel Bus），确保核心架构稳固后再引入桌面端运行环境。
+- **预期收益**: 能够获得更底层的文件系统访问权限、原生应用的性能体验，为未来的 CLI/本地 Node.js 基础设施（Infrastructure Layer）打下基础。
